@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/work")
-class WorkController {
+class UserController {
 
     @GetMapping
     fun work(): String {
