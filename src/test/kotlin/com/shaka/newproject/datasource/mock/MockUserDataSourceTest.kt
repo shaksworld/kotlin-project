@@ -21,8 +21,8 @@ internal class MockUserDataSourceTest {
 
         // assert that the data is correct
 //        assert(users.contains(Users("1234", 3.14, 1)))
-        assert(users.all { it.accountNumber.isNotBlank() })
-        assert(users.all { it.trust != 0.0 })
-        assert(users.any { it.transactionFee != 0 })
+        assert(users.all { it.name.isNotBlank() })
+        assert(users.all { it.phoneNumber != 0 })
+        assert(users.any { it.address.isNotBlank() })
     }
 }

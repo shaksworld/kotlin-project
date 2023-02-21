@@ -1,7 +1,7 @@
 package com.shaka.newproject.model
 
 data class Users(
-     val accountNumber: String,
-     val trust: Double,
-     val transactionFee: Int
+     val name: String,
+     val phoneNumber: Int,
+     val address: String
      )

@@ -2,19 +2,25 @@ package com.shaka.newproject.controller
 
 import com.shaka.newproject.model.Users
 import com.shaka.newproject.service.UserService
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/user")
 class UserController (private val userService: UserService) {
 
+    @ExceptionHandler(NoSuchElementException::class)
+    fun handleNotFound(e: NoSuchElementException): ResponseEntity<String> =
+        ResponseEntity(e.message, HttpStatus.NOT_FOUND)
+
     @GetMapping
     fun getUser(): Collection<Users> = userService.getUser()
-    @GetMapping("/{accountNumber}")
-    fun getUser(@PathVariable accountNumber: String): Users = userService.getUser(accountNumber)
+    @GetMapping("/{name}")
+    fun getUser(@PathVariable name: String): Users = userService.getUser(name)
 
 
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    fun createUser(@RequestBody user: Users) = userService.createUser(user)
 }

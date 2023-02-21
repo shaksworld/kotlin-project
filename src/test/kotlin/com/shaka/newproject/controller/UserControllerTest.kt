@@ -12,6 +12,7 @@ import org.springframework.context.Lifecycle
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
+import org.springframework.test.web.servlet.post
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -33,50 +34,142 @@ internal class UserControllerTest {
                 .andExpect {
                     status { isOk() }
                     content { contentType(MediaType.APPLICATION_JSON) }
-                    jsonPath("$[0].accountNumber") { value("1234") }
+                    jsonPath("$[0].name") { value("Shaka") }
                 }
         }
     }
 
     @Nested
-    @DisplayName("getUsers()")
+    @DisplayName("GET /user/{name}")
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class GetUserByAccountNumber {
 
         @Test
-        fun `should return user by account number`() {
+        fun `should return user by name`() {
 
             //given
-            val accountNumber = "1234"
+            val name = "Shaka"
 
             //when
-            mockMvc.get("/user/$accountNumber")
+            mockMvc.get("/user/$name")
                 .andDo { print() }
                 .andExpect {
                     status { isOk() }
                     content { contentType(MediaType.APPLICATION_JSON) }
-                    jsonPath("$.trust") { value(3.14) }
-                    jsonPath("$.transactionFee") { value(1) }
+                    jsonPath("$.name") { value(name) }
+                    jsonPath("$.phoneNumber") { value(1234) }
+                    jsonPath("$.address") { value("kigali") }
                 }
 
         }
+
+//        @Test
+//        fun `should return user by `() {
+//
+//            //given
+//            val name = "Shaka"
+//
+//            //when
+//            mockMvc.get("/user/$name")
+//                .andDo { print() }
+//                .andExpect {
+//                    status { isOk() }
+//                    content { contentType(MediaType.APPLICATION_JSON) }
+//                    jsonPath("$.name") { value(name) }
+////                    jsonPath("$.trust") { value(3.14) }
+////                    jsonPath("$.transactionFee") { value(1) }
+//                }
+//
+//        }
+//
+//        @Test
+//        fun `should return 404 when user not found`() {
+//
+//            //given
+//            val name = "Shaka"
+//
+//            //when
+//            mockMvc.get("/user/$name")
+//                .andDo { print() }
+//                .andExpect {
+//                    status { isNotFound() }
+//                }
+//
+//        }
+
+        @Nested
+        @DisplayName("POST /create")
+        @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+        inner class CreateUser {
+
+            @Test
+            fun `should create new user`() {
+
+                //given
+                val name = "Shaka"
+                val phoneNumber = 1234
+                val address = "Kigali"
+
+                //when
+                mockMvc.post("/user/create") {
+                    contentType = MediaType.APPLICATION_JSON
+                    content = """
+                        {
+                            "name": "$name",
+                            "phoneNumber": $phoneNumber,
+                            "address": "$address"
+                        }
+                    """.trimIndent()
+                }
+                    .andDo { print() }
+                    .andExpect {
+                        status { isCreated() }
+                        content { contentType(MediaType.APPLICATION_JSON) }
+                        jsonPath("$.name") { value(name) }
+                        jsonPath("$.phoneNumber") { value(phoneNumber) }
+                        jsonPath("$.address") { value(address) }
+//                        jsonPath("$.accountNumber") { value(accountNumber) }
+//                        jsonPath("$.trust") { value(trust) }
+//                        jsonPath("$.transactionFee") { value(transactionFee) }
+                    }
+            }
+
+            @Nested
+            @DisplayName("POST /create")
+            @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+            inner class UpdateUser {
+                @Test
+                fun `should create new user`() {
+
+                    //given
+                    val name = "Shaka"
+                    val phoneNumber = 1234
+                    val address = "Kigali"
+
+                    //when
+                    mockMvc.post("/user/update") {
+                        contentType = MediaType.APPLICATION_JSON
+                        content = """
+                        {
+                            "name": "$name",
+                            "phoneNumber": $phoneNumber,
+                            "address": "$address"
+                        }
+                    """.trimIndent()
+                    }
+                        .andDo { print() }
+                        .andExpect {
+                            status { isCreated() }
+                            content { contentType(MediaType.APPLICATION_JSON) }
+                            jsonPath("$.name") { value(name) }
+                            jsonPath("$.phoneNumber") { value(phoneNumber) }
+                            jsonPath("$.address") { value(address) }
+
+                        }
+                }
+            }
+        }
     }
 }
-//    @Test
-//    fun `should return user by account number`() {
-//
-//        //given
-//        val accountNumber = "1234"
-//
-//        //when
-//        mockMvc.get("/user/$accountNumber")
-//            .andDo { print() }
-//            .andExpect {
-//                status { isOk() }
-//                content { contentType(MediaType.APPLICATION_JSON) }
-//                jsonPath("$.trust") { value(3.14) }
-//                jsonPath("$.transactionFee") { value(1) }
-//            }
-//
-//    }
-//}
+
+

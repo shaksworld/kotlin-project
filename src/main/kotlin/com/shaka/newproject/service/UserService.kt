@@ -9,7 +9,12 @@ class UserService (private val userDataSource: UserDataSource) {
 
     fun getUser(): Collection<Users> = userDataSource.retriveUser()
 
-    fun getUser(accountNumber: String): Users = userDataSource.workUser(accountNumber)
+    fun getUser(name: String): Users = userDataSource.workUser(name)
+    fun createUser(users: Users): Any {
+        TODO("Not yet implemented")
+    }
+
+//    fun getUser(accountNumber: String): Users = userDataSource.workUser(accountNumber)
 
 
 

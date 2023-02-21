@@ -7,12 +7,18 @@ import org.springframework.stereotype.Repository
 @Repository
 class MockUserDataSource : UserDataSource {
     var users = listOf(
-        Users("1234", 3.14, 1),
-        Users("5678", 6.28, 2),
-        Users("9101", 9.42, 3)
+        Users("Shaka", 1234, "Kigali"),
+        Users("Sofiyyah", 1235, "Kigali"),
+        Users("Usman", 1236, "Kigali"),
     )
     override fun retriveUser(): Collection<Users> = users
     override fun workUser(accountNumber: String): Users {
-        return users.first { it.accountNumber == accountNumber }
+        TODO("Not yet implemented")
     }
+
+
+//    override fun workUser(accountNumber: String): Users {
+//        return users.firstOrNull() { it.name == accountNumber }
+//            ?: throw NoSuchElementException("Could not find a user with account number $accountNumber")
+//    }
 }
