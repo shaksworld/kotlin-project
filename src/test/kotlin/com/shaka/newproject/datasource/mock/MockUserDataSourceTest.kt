@@ -1,8 +1,5 @@
 package com.shaka.newproject.datasource.mock
 
-import com.shaka.newproject.model.Users
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 internal class MockUserDataSourceTest {
@@ -11,7 +8,7 @@ internal class MockUserDataSourceTest {
 
     @Test
     fun `should return a collection of users`() {
-        val users = mockUserDataSource.getUser()
+        val users = mockUserDataSource.retriveUser()
 
         // assert that the collection is not empty
         assert(users.isNotEmpty())
@@ -20,7 +17,7 @@ internal class MockUserDataSourceTest {
 
     @Test
     fun `should return the correct data for the user`() {
-        val users = mockUserDataSource.getUser()
+        val users = mockUserDataSource.retriveUser()
 
         // assert that the data is correct
 //        assert(users.contains(Users("1234", 3.14, 1)))

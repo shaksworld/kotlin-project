@@ -7,5 +7,11 @@ import org.springframework.stereotype.Service
 @Service
 class UserService (private val userDataSource: UserDataSource) {
 
-    fun getUser(): Collection<Users> = userDataSource.getUser()
+    fun getUser(): Collection<Users> = userDataSource.retriveUser()
+
+    fun getUser(accountNumber: String): Users = userDataSource.workUser(accountNumber)
+
+
+
+
 }

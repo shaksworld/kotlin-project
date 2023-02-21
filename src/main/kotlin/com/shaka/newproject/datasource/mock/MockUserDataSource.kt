@@ -11,5 +11,8 @@ class MockUserDataSource : UserDataSource {
         Users("5678", 6.28, 2),
         Users("9101", 9.42, 3)
     )
-    override fun getUser(): Collection<Users> = users
+    override fun retriveUser(): Collection<Users> = users
+    override fun workUser(accountNumber: String): Users {
+        return users.first { it.accountNumber == accountNumber }
+    }
 }

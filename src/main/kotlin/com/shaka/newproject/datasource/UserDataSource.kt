@@ -4,5 +4,8 @@ import com.shaka.newproject.model.Users
 
 interface UserDataSource {
 
-    fun getUser(): Collection<Users>
+    fun retriveUser(): Collection<Users>
+    fun workUser(accountNumber: String): Users
+
+
 }
