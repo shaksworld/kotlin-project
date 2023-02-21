@@ -1,5 +1,7 @@
 package com.shaka.newproject.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.shaka.newproject.model.Users
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -10,16 +12,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.Lifecycle
 import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.get
-import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.*
 
 @SpringBootTest
 @AutoConfigureMockMvc
-internal class UserControllerTest {
-
-    @Autowired
-    lateinit var mockMvc: MockMvc
+internal class UserControllerTest @Autowired constructor(
+    val mockMvc: MockMvc,
+    val objectMapper: ObjectMapper
+        ) {
 
     @Nested
     @DisplayName("getUsers()")
@@ -34,7 +34,7 @@ internal class UserControllerTest {
                 .andExpect {
                     status { isOk() }
                     content { contentType(MediaType.APPLICATION_JSON) }
-                    jsonPath("$[0].name") { value("Shaka") }
+                    jsonPath("$[0].name") { value("shaka") }
                 }
         }
     }
@@ -48,54 +48,35 @@ internal class UserControllerTest {
         fun `should return user by name`() {
 
             //given
-            val name = "Shaka"
+            val name = "shaka"
+
+            //when
+            val andExpect = mockMvc.get("/user/$name")
+                .andDo { print() }
+                .andExpect {
+                    status { isOk() }
+                    content { contentType(MediaType.APPLICATION_JSON) }
+//                    jsonPath("$.name") { value(name) }
+                    jsonPath("$.phoneNumber") { value(123456789) }
+                    jsonPath("$.address") { value("Nigeria") }
+                }
+
+        }
+
+        @Test
+        fun `should return 404 when user not found`() {
+
+            //given
+            val name = "does_not_exist"
 
             //when
             mockMvc.get("/user/$name")
                 .andDo { print() }
                 .andExpect {
-                    status { isOk() }
-                    content { contentType(MediaType.APPLICATION_JSON) }
-                    jsonPath("$.name") { value(name) }
-                    jsonPath("$.phoneNumber") { value(1234) }
-                    jsonPath("$.address") { value("kigali") }
+                    status { isNotFound() }
                 }
 
         }
-
-//        @Test
-//        fun `should return user by `() {
-//
-//            //given
-//            val name = "Shaka"
-//
-//            //when
-//            mockMvc.get("/user/$name")
-//                .andDo { print() }
-//                .andExpect {
-//                    status { isOk() }
-//                    content { contentType(MediaType.APPLICATION_JSON) }
-//                    jsonPath("$.name") { value(name) }
-////                    jsonPath("$.trust") { value(3.14) }
-////                    jsonPath("$.transactionFee") { value(1) }
-//                }
-//
-//        }
-//
-//        @Test
-//        fun `should return 404 when user not found`() {
-//
-//            //given
-//            val name = "Shaka"
-//
-//            //when
-//            mockMvc.get("/user/$name")
-//                .andDo { print() }
-//                .andExpect {
-//                    status { isNotFound() }
-//                }
-//
-//        }
 
         @Nested
         @DisplayName("POST /create")
@@ -106,67 +87,77 @@ internal class UserControllerTest {
             fun `should create new user`() {
 
                 //given
-                val name = "Shaka"
-                val phoneNumber = 1234
-                val address = "Kigali"
+                val newUsers = Users("muhammed", 123456789, "Nigeria")
 
-                //when
-                mockMvc.post("/user/create") {
+                // when
+                val performPost = mockMvc.post("/user/create") {
                     contentType = MediaType.APPLICATION_JSON
-                    content = """
-                        {
-                            "name": "$name",
-                            "phoneNumber": $phoneNumber,
-                            "address": "$address"
-                        }
-                    """.trimIndent()
+                    content = objectMapper.writeValueAsString(newUsers)
                 }
+                //then
+                performPost
                     .andDo { print() }
                     .andExpect {
                         status { isCreated() }
                         content { contentType(MediaType.APPLICATION_JSON) }
-                        jsonPath("$.name") { value(name) }
-                        jsonPath("$.phoneNumber") { value(phoneNumber) }
-                        jsonPath("$.address") { value(address) }
-//                        jsonPath("$.accountNumber") { value(accountNumber) }
-//                        jsonPath("$.trust") { value(trust) }
-//                        jsonPath("$.transactionFee") { value(transactionFee) }
+                        jsonPath("$.name") { value(newUsers.name) }
+                        jsonPath("$.phoneNumber") { value(newUsers.phoneNumber) }
+                        jsonPath("$.address") { value(newUsers.address) }
                     }
             }
 
+            //
+//            mockMvc.get("/user/${newUsers.name}")
+//                .andExpect {
+//                    status { isOk() }
+//                    content { contentType(MediaType.APPLICATION_JSON) }
+//                    jsonPath("$.name") { value(newUsers.name) }
+//                    jsonPath("$.phoneNumber") { value(newUsers.phoneNumber) }
+//                    jsonPath("$.address") { value(newUsers.address) }
+//                }
             @Nested
-            @DisplayName("POST /create")
+            @DisplayName("PATCH /user")
             @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-            inner class UpdateUser {
-                @Test
-                fun `should create new user`() {
+            inner class PatchExistingUser {
 
+                @Test
+                fun `should update and exiting user`() {
                     //given
-                    val name = "Shaka"
-                    val phoneNumber = 1234
-                    val address = "Kigali"
+                    val nameUpdate = Users("shaka", 123456789, "USA")
 
                     //when
-                    mockMvc.post("/user/update") {
+                    val performPatch = mockMvc.patch("/user") {
                         contentType = MediaType.APPLICATION_JSON
-                        content = """
-                        {
-                            "name": "$name",
-                            "phoneNumber": $phoneNumber,
-                            "address": "$address"
-                        }
-                    """.trimIndent()
+                        content = objectMapper.writeValueAsString(nameUpdate)
                     }
+
+                    //then
+                    performPatch
                         .andDo { print() }
                         .andExpect {
-                            status { isCreated() }
+                            status { isOk() }
                             content { contentType(MediaType.APPLICATION_JSON) }
-                            jsonPath("$.name") { value(name) }
-                            jsonPath("$.phoneNumber") { value(phoneNumber) }
-                            jsonPath("$.address") { value(address) }
-
+                            jsonPath("$.name") { value(nameUpdate.name) }
+                            jsonPath("$.phoneNumber") { value(nameUpdate.phoneNumber) }
+                            jsonPath("$.address") { value(nameUpdate.address) }
                         }
                 }
+
+
+//            @Test
+//            fun `should return BAD REQUEST when name already exist` (){
+//                val invalidUser = Users("taiwo", 987656789, "Tiawan")
+//
+//                val performPost =mockMvc.post("/user/create") {
+//                    contentType = MediaType.APPLICATION_JSON
+//                    content = objectMapper.writeValueAsString(invalidUser)
+//                }
+//                performPost
+//                    .andDo { print() }
+//                    .andExpect {
+//                        status { isBadRequest() }
+//                    }
+//            }
             }
         }
     }

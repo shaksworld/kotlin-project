@@ -14,6 +14,9 @@ class UserService (private val userDataSource: UserDataSource) {
         TODO("Not yet implemented")
     }
 
+    fun addUser(users: Users): Users = userDataSource.addUser(users)
+    fun updateUser(users: Users): Users = userDataSource.updateUser(users)
+
 //    fun getUser(accountNumber: String): Users = userDataSource.workUser(accountNumber)
 
 

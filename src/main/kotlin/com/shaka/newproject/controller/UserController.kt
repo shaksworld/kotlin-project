@@ -14,13 +14,19 @@ class UserController (private val userService: UserService) {
     fun handleNotFound(e: NoSuchElementException): ResponseEntity<String> =
         ResponseEntity(e.message, HttpStatus.NOT_FOUND)
 
+//    @ExceptionHandler(IllegalAccessException::class)
+//    fun handleBadRequest(e: IllegalAccessException): ResponseEntity<String> =
+//        ResponseEntity(e.message, HttpStatus.BAD_REQUEST)
+
     @GetMapping
     fun getUser(): Collection<Users> = userService.getUser()
     @GetMapping("/{name}")
     fun getUser(@PathVariable name: String): Users = userService.getUser(name)
 
-
-    @PostMapping
+    @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    fun createUser(@RequestBody user: Users) = userService.createUser(user)
+    fun createUser(@RequestBody users: Users): Users = userService.addUser(users)
+
+    @PatchMapping
+    fun updateUser(@RequestBody users: Users): Users = userService.updateUser(users)
 }
