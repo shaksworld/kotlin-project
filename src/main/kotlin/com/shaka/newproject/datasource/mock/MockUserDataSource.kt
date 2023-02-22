@@ -12,7 +12,7 @@ class MockUserDataSource : UserDataSource {
         Users("shakirat", 123456789, "Nigeria")
     )
     override fun retriveUser(): Collection<Users> = users
-    override fun workUser(name: String): Users = users.firstOrNull() { it.name == name }
+    override fun workUser(name: String): Users = users.firstOrNull { it.name == name }
         ?: throw NoSuchElementException("Could not find a user with name $name")
 
     override fun addUser(users: Users): Users {
@@ -22,12 +22,16 @@ class MockUserDataSource : UserDataSource {
         return users
     }
 
-    override fun updateUser(users: Users): Users {
-        val currentUsers = users.firstOrNull { it.name == users.name }
-            ?: throw NoSuchElementException("Could not find a user with name ${users.name}")
+    override fun updateUser(user: Users): Users {
+        val currentUsers = users.firstOrNull { it.name == user.name }
+            ?: throw NoSuchElementException("Could not find a user with name ${user.name}")
         users.remove(currentUsers)
-        users.add(users)
+        users.add(user)
+        return user
+    }
 
-        return users
+
+    override fun deleteUser(name: String) {
+        TODO("Not yet implemented")
     }
 }
