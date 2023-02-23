@@ -29,4 +29,8 @@ class UserController (private val userService: UserService) {
 
     @PatchMapping
     fun updateUser(@RequestBody users: Users): Users = userService.updateUser(users)
+
+    @DeleteMapping("/{name}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteUser(@PathVariable name: String): Unit = userService.deleteUser(name)
 }

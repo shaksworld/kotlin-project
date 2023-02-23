@@ -32,6 +32,8 @@ class MockUserDataSource : UserDataSource {
 
 
     override fun deleteUser(name: String) {
-        TODO("Not yet implemented")
+        val currentUsers = users.firstOrNull { it.name == name }
+            ?: throw NoSuchElementException("Could not find a user with name $name")
+        users.remove(currentUsers)
     }
 }

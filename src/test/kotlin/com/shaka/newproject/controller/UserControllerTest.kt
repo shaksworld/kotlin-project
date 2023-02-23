@@ -143,6 +143,66 @@ internal class UserControllerTest @Autowired constructor(
                         }
                 }
 
+                @Test
+                fun `should return BAD REQUEST if no user exist`() {
+                    //given
+                    val nameUpdate = Users("does_not_exist", 123409, "USA")
+
+                    //when
+                    val performPatch = mockMvc.patch("/user") {
+                        contentType = MediaType.APPLICATION_JSON
+                        content = objectMapper.writeValueAsString(nameUpdate)
+                    }
+
+                    //then
+                    performPatch
+                        .andDo { print() }
+                        .andExpect {
+                            status { isNotFound( ) }
+                        }
+                }
+
+                @Nested
+                @DisplayName("DELETE /user/{name}")
+                @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+                inner class DeleteUser {
+
+                    @Test
+                    fun `should delete user`() {
+                        //given
+                        val name = "shaka"
+
+                        //when
+                        val performDelete = mockMvc.delete("/user/$name")
+
+                        //then
+                        performDelete
+                            .andDo { print() }
+                            .andExpect {
+                                status { isNoContent() }
+                            }
+                        mockMvc.get("/user/$name")
+                            .andExpect {
+                                status { isNotFound() }
+                            }
+                    }
+
+                    @Test
+                    fun `should return BAD REQUEST if no user exist`() {
+                        //given
+                        val name = "does_not_exist"
+
+                        //when
+                        val performDelete = mockMvc.delete("/user/$name")
+
+                        //then
+                        performDelete
+                            .andDo { print() }
+                            .andExpect {
+                                status { isNotFound() }
+                            }
+                    }
+                }
 
 //            @Test
 //            fun `should return BAD REQUEST when name already exist` (){

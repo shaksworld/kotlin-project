@@ -16,6 +16,7 @@ class UserService (private val userDataSource: UserDataSource) {
 
     fun addUser(users: Users): Users = userDataSource.addUser(users)
     fun updateUser(users: Users): Users = userDataSource.updateUser(users)
+    fun deleteUser(name: String) = userDataSource.deleteUser(name)
 
 //    fun getUser(accountNumber: String): Users = userDataSource.workUser(accountNumber)
 
