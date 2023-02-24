@@ -1,3 +1,4 @@
+import groovy.xml.dom.DOMCategory.attributes
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -5,6 +6,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.0"
 	kotlin("jvm") version "1.7.22"
 	kotlin("plugin.spring") version "1.7.22"
+
 }
 
 group = "com.shaka"
@@ -33,4 +35,26 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+//tasks.jar{
+//	manifest.attributes["Main-Class"] = "com.shaka.newproject.NewProjectApplicationKt"
+//}
+
+tasks.withType<Jar> {
+	// Otherwise you'll get a "No main manifest attribute" error
+	manifest {
+		attributes["Main-Class"] =  "com.shaka.newproject.NewProjectApplicationKt"
+	}
+
+	// To avoid the duplicate handling strategy error
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+	// To add all of the dependencies
+	from(sourceSets.main.get().output)
+
+	dependsOn(configurations.runtimeClasspath)
+	from({
+		configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+	})
 }
